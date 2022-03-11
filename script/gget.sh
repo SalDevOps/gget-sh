@@ -13,7 +13,7 @@ source base || {
     printf "
     This script requires its |__base| library to be installed along with it.\n
     Please read the installation notes first from
-       https://github.com/SalDevOps/gget#readme\n"
+       https://github.com/d-libre/gget-sh#readme\n"
     exit 2
 }
 

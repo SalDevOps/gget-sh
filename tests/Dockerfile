@@ -1,4 +1,4 @@
-ARG BaseLib=https://raw.githubusercontent.com/SalDevOps/base-sh/main/script/base.sh
+ARG BaseLib=https://raw.githubusercontent.com/d-libre/base-sh/main/script/base.sh
 # -- BEGIN --
 FROM gget/test-base:alpine-curl AS base-alpine-curl
 ARG BaseLib

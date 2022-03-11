@@ -22,7 +22,7 @@ or the full URL of the repository: https://github.com/<username>/<repository>
                         (where this script is being run from)
     [-p|--prefix]       Some known prefix for the shorthand. If included it will
                         be prepended to the <repository> part of the shorthand.
-                        e.g.: `gget --prefix test- SalDevOps/sample`
+                        e.g.: `gget --prefix test- gitHubUser/sample`
                         will make gget to look for either `test-sample` (first)
                         or just `sample` (in case `test-sample` were not found)
     [-u|--user]         The user that tries to download the files.
@@ -36,4 +36,4 @@ or the full URL of the repository: https://github.com/<username>/<repository>
                         repositories
                         
 
-More details at https://github.com/SalDevOps/gget#readme
+More details at https://github.com/d-libre/gget-sh#readme
