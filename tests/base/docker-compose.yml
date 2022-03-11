@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+
+  alpine-base:
+    build:
+      context: .
+      target: base
+      dockerfile: Dockerfile.alpine
+    image: gget/test-base:alpine
+
+  alpine-curl:
+    build:
+      context: .
+      target: curl
+      dockerfile: Dockerfile.alpine
+    image: gget/test-base:alpine-curl
+
+  alpine-nolib:
+    build:
+      context: .
+      target: nolib # default anyways
+      dockerfile: Dockerfile.alpine
+    image: gget/test-base:alpine-nolib
+
+  centos-base:
+    build:
+      context: .
+      dockerfile: Dockerfile.centos7
+    image: gget/test-base:centos7

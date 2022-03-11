@@ -1,0 +1,17 @@
+FROM alpine AS base
+
+RUN apk add --no-cache bash \
+    && mkdir /test
+
+WORKDIR /src
+ENTRYPOINT [ "bash" ]
+
+
+FROM base AS curl
+
+RUN apk add --no-cache curl
+
+
+FROM base AS nolib
+
+RUN rm /usr/bin/wget

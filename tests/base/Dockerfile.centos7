@@ -1,0 +1,8 @@
+FROM centos:centos7
+
+RUN yum install -y --nogpgcheck bash &>dev/null \
+    && yum clean all \
+    && mkdir /test
+
+WORKDIR /src
+ENTRYPOINT [ "bash" ]
