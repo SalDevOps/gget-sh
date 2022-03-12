@@ -27,7 +27,7 @@ source base || {
 trap 'base::onExit $? $LINENO' EXIT
 trap 'base::onError $? $LINENO' ERR
 
-declare -r __GGET_SCRIPT_LOCATION=$(base::where)
+declare -r __GGET_SCRIPT_LOCATION=$(base::where ${BASH_SOURCE[0]})
 declare -r __GGET_PARENT_CALLER_SCRIPT="Terminal"
 declare -r __BASE_ENV_VARS="^(GGET_|_+gget_+)"
 
