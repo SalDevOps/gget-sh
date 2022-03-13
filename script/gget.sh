@@ -134,25 +134,25 @@ gget::validateTokenSecret() {
         base::printEmpty true "User API Token Secret file"
         return 0
     fi
-    local _gget_actual_secret_path=
-    local _gget_user_secret=$(base::toAbsoluteFilePath "${GGET_USER_SECRET}")
-    if [[ -f "${_gget_user_secret}" ]]; then
-        _gget_actual_secret_path="${_gget_user_secret}"
+    local _gget_actualSecretPath=
+    local _gget_userSecret=$(base::toAbsoluteFilePath "${GGET_USER_SECRET}")
+    if [[ -f "${_gget_userSecret}" ]]; then
+        _gget_actualSecretPath="${_gget_userSecret}"
     else
         # when in docker, look into the /run/secrets directory as well (if exists)
         if [[ -d "/run/secrets" ]]; then
             echo "Files in /run/secrets:"
             ls /run/secrets
-            _gget_user_secret=$(basename ${GGET_USER_SECRET})
-            if [[ -f "/run/secrets/${_gget_user_secret}" ]]; then
-                _gget_actual_secret_path="/run/secrets/${GGET_USER_SECRET}"
+            _gget_userSecret=$(basename ${GGET_USER_SECRET})
+            if [[ -f "/run/secrets/${_gget_userSecret}" ]]; then
+                _gget_actualSecretPath="/run/secrets/${GGET_USER_SECRET}"
             fi
         fi
     fi
-    if [[ ! -z "${_gget_actual_secret_path}" ]]; then
+    if [[ ! -z "${_gget_actualSecretPath}" ]]; then
         # Token Found in Secrets!
         set +o xtrace
-        GGET__USER_API_TOKEN=$(cat ${_gget_actual_secret_path})
+        GGET__USER_API_TOKEN=$(cat ${_gget_actualSecretPath})
     else
         echo "No secrets found with such filename ${GGET_USER_SECRET}"
         exit 14
@@ -173,19 +173,19 @@ gget::tryParseRepoURL() {
     if [[ "$_gget_url" =~ $__GGET_RE_PAIR ]]; then
         _gget_hostname=github.com
         _gget_username=${BASH_REMATCH[1]}
-        _gget_reponame=${BASH_REMATCH[2]}
+        _gget_repoName=${BASH_REMATCH[2]}
 
         # Prepend the prefix -- only if it has been provided
         # and not currently included in the repository name
-        if [[ ! -z ${GGET_REPO_PREFIX} ]] && [[ ! "${_gget_reponame}" =~ ^${GGET_REPO_PREFIX}.* ]]; then
-            _gget_prefixed=${GGET_REPO_PREFIX}${_gget_reponame}
+        if [[ ! -z ${GGET_REPO_PREFIX} ]] && [[ ! "${_gget_repoName}" =~ ^${GGET_REPO_PREFIX}.* ]]; then
+            _gget_prefixed=${GGET_REPO_PREFIX}${_gget_repoName}
         fi
 
     # Full git URLs
     elif [[ "$_gget_url" =~ $__GGET_RE_FULL ]]; then
         _gget_hostname=${BASH_REMATCH[3]}
         _gget_username=${BASH_REMATCH[4]}
-        _gget_reponame=${BASH_REMATCH[5]}
+        _gget_repoName=${BASH_REMATCH[5]}
     else
         echo "The value for URL/Shorthand seems to not match any valid criteria."
         __showHelp
@@ -194,7 +194,7 @@ gget::tryParseRepoURL() {
 
     echo "Provider: ${_gget_hostname}"
     echo "Owner:    ${_gget_username}"
-    echo "Repo:     ${_gget_reponame}"
+    echo "Repo:     ${_gget_repoName}"
     if [[ ${_gget_prefixed} ]]; then
         echo "Alter:    ${_gget_prefixed}"
     fi
@@ -208,11 +208,11 @@ gget::buildFullRepositoryUrl() {
 }
 
 gget::checkUrlExists() {
-    local auth=${GGET_GH_USERNAME:-${_gget_username}}:${GGET__USER_API_TOKEN}
+    local _auth=${GGET_GH_USERNAME:-${_gget_username}}:${GGET__USER_API_TOKEN}
     if [[ $__GGET_WITH_CURL ]]; then
-        curl -fsI -u ${auth} https://${1} -o /dev/null && echo OK || true
+        curl -fsI -u ${_auth} https://${1} -o /dev/null && echo OK || true
     else
-        wget --spider https://${auth}@${1} &>/dev/null && echo OK || true
+        wget --spider https://${_auth}@${1} &>/dev/null && echo OK || true
     fi
 }
 
@@ -229,7 +229,7 @@ gget::cleanTargetUrl() {
         fi
     fi
     if [[ -z $_targetUrl ]]; then
-        _targetUrl=$(gget::buildFullRepositoryUrl "${_gget_reponame}")
+        _targetUrl=$(gget::buildFullRepositoryUrl "${_gget_repoName}")
         echo "Trying with ${_targetUrl}"
         _exists=$(gget::checkUrlExists "${_targetUrl}")
         if [[ ! "${_exists}" == *OK ]]; then
@@ -249,15 +249,15 @@ gget::downloadFiles() {
     # GGET__USER_API_TOKEN  : git Access Token      ? optional
     # ---
     # Disable logging (in case it has been previously enabled)
-    # to avoid "leaking" the user auth token in any trace/logs
+    # to avoid "leaking" the user _auth token in any trace/logs
     set +o xtrace
-    local auth=${GGET_GH_USERNAME:-${_gget_username}}:${GGET__USER_API_TOKEN}
+    local _auth=${GGET_GH_USERNAME:-${_gget_username}}:${GGET__USER_API_TOKEN}
     echo "Downloading from https://${_gget_targetUrl}"
     # Direct Download via API (will properly follow the returned redirection)
     if [[ ${__GGET_WITH_CURL} ]]; then
-        curl -sL -u ${auth} -H ${__GGET_GITHUB_ACCEPT_RAW_HEADER} https://${_gget_targetUrl} | tar xz --strip=1 -C ${GGET_FILES_DIR}
+        curl -sL -u ${_auth} -H ${__GGET_GITHUB_ACCEPT_RAW_HEADER} https://${_gget_targetUrl} | tar xz --strip=1 -C ${GGET_FILES_DIR}
     else
-        wget -qO- --header ${__GGET_GITHUB_ACCEPT_RAW_HEADER} https://${auth}@${_gget_targetUrl}  | tar xz --strip=1 -C ${GGET_FILES_DIR}
+        wget -qO- --header ${__GGET_GITHUB_ACCEPT_RAW_HEADER} https://${_auth}@${_gget_targetUrl}  | tar xz --strip=1 -C ${GGET_FILES_DIR}
     fi
 }
 
