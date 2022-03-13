@@ -64,7 +64,13 @@ gget::parseArguments() {
         __showHelp
         exit 1
     }
-    eval set -- "$_gget_options"      # ?idkw
+    local _trailingArgs=$(base::trailingArguments "${_gget_options}")
+    local _firstTrailing="${_trailingArgs%% *}"
+    if [[ ! -z "${_firstTrailing}" ]]; then
+        # Assign (first) trailing value to the repository URL/ShortHand
+        base::setEnv GGET_REPO_SH_URL "${_firstTrailing}" 'Git Shorthand/URL'
+    fi
+    eval set -- "$_gget_options"
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -b|--branch)
@@ -97,8 +103,6 @@ gget::parseArguments() {
                 ;;
         esac
     done
-    # Assign (first) trailing value to the repository URL/ShortHand
-    base::setEnv GGET_REPO_SH_URL "${1}" 'Git Shorthand/URL'
 }
 
 gget::displayConfig() {
