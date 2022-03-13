@@ -6,14 +6,15 @@ set -eE
 set -a
 
 declare -r __GGET_VERSION=0.1.0
+declare -r __GGET_GITHUB_URL=https://github.com/d-libre/gget-sh
 
 printf "gget v${__GGET_VERSION}\n"
 
-source base || {
+source base 2>/dev/null || {
     printf "
-    This script requires its |__base| library to be installed along with it.\n
+    This script requires its |base| library to be installed along with it.\n
     Please read the installation notes first from
-       https://github.com/d-libre/gget-sh#readme\n"
+       ${__GGET_GITHUB_URL}#readme\n"
     exit 2
 }
 
@@ -24,14 +25,31 @@ source base || {
     exit 3
 }
 
+declare -r __GGET_SCRIPT_LOCATION=$(base::where ${BASH_SOURCE[0]})
+
+__showHelp() {
+    # TODO: Tool to properly handle/render the markdown instead of just "cat" it
+    cat ${__GGET_SCRIPT_LOCATION}/docs/gget.md 2>/dev/null || {
+        printf "
+Download Code directly from a public/private GitHub Repository
+
+Usage:
+    gget [OPTIONS] <github-user>/<repository> | <full-github-repository-url>
+Please read ${__GGET_GITHUB_URL}#readme for more details
+
+"
+    }
+}
+
+echo ":: ${__GGET_SCRIPT_LOCATION}"
+# Immediately exit if no arguments
+[[ -z ${1} ]] && __showHelp && exit 0 || true
+
 trap 'base::onExit $? $LINENO' EXIT
 trap 'base::onError $? $LINENO' ERR
 
-declare -r __GGET_SCRIPT_LOCATION=$(base::where ${BASH_SOURCE[0]})
-declare -r __GGET_PARENT_CALLER_SCRIPT="Terminal"
+declare -r __GGET_CALLER_SCRIPT="GGet"
 declare -r __BASE_ENV_VARS="^(GGET_|_+gget_+)"
-
-printf "Installation Path: ${__GGET_SCRIPT_LOCATION}\n"
 
 declare -r __GGET_GITHUB_API_BASE_URL=api.github.com
 declare -r __GGET_GITHUB_ACCEPT_RAW_HEADER="Accept:application/vnd.github.v3.raw"
@@ -46,15 +64,10 @@ declare -r __GGET_RE_PAIR="^([[:alnum:]-]+)\/([[:alnum:]-]+)*$"
 #   git://github.com/some-user/the-repo.git
 declare -r __GGET_RE_FULL="^(https|git)(:\/\/|@)([^\/:]+)[\/:]([^\/:]+)\/([^.]+)(.git)*$"
 
-__showHelp() {
-    # TODO: Tool to properly handle/render the markdown instead of just "cat" it
-    cat ${__GGET_SCRIPT_LOCATION}/docs/gget.md
-}
-
 gget::parseArguments() {
     # Try
     local _gget_options=$(getopt \
-        -n "${__GGET_PARENT_CALLER_SCRIPT}" \
+        -n "${__GGET_CALLER_SCRIPT}" \
         -s bash \
         -l "branch:,tag:,output:,prefix:,user:,secret:" \
         -o "b:t:o:p:u:s:" \

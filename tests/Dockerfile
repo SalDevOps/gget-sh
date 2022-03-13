@@ -3,25 +3,25 @@ ARG BaseLib=https://raw.githubusercontent.com/d-libre/base-sh/main/script/base.s
 FROM gget/test-base:alpine-curl AS base-alpine-curl
 ARG BaseLib
 ADD ${BaseLib} /usr/local/bin/base
-ADD script/* /usr/local/lib/gget/
+ADD script/ /usr/local/lib/gget/
 RUN ln -s ../lib/gget/gget.sh /usr/local/bin/gget
 
 FROM gget/test-base:alpine AS bare-alpine-wget
 ARG BaseLib
 ADD ${BaseLib} /usr/local/bin/base
-ADD script/* /usr/local/lib/gget/
+ADD script/ /usr/local/lib/gget/
 RUN ln -s ../lib/gget/gget.sh /usr/local/bin/gget
 
 FROM gget/test-base:centos7 AS base-centos-curl
 ARG BaseLib
 ADD ${BaseLib} /usr/local/bin/base
-ADD script/* /usr/local/lib/gget/
+ADD script/ /usr/local/lib/gget/
 RUN ln -s ../lib/gget/gget.sh /usr/local/bin/gget
 
 FROM gget/test-base:alpine-nolib AS bare-minimal
 ARG BaseLib
 ADD ${BaseLib} /usr/local/bin/base
-ADD script/* /usr/local/lib/gget/
+ADD script/ /usr/local/lib/gget/
 RUN ln -s ../lib/gget/gget.sh /usr/local/bin/gget
 
 
@@ -47,6 +47,9 @@ RUN gget --prefix test-repo- -u owner-user --secret token -o /test re-sources/pr
 FROM bare-minimal AS with-no-libraries
 RUN gget re-sources/test-repo-public || touch /test/OK
 
+FROM bare-alpine-wget AS quick-exit-if-no-args
+RUN gget | grep Missing || { echo "Process was properly skipped"; touch /test/OK; }
+
 FROM bare-alpine-wget AS disposed-env-variables
 RUN gget -o /test re-sources/test-repo-public \
     && env | grep gget || { echo "No gget variables found"; }
@@ -62,4 +65,5 @@ COPY --from=smoke-test-centos-curl  /test/OK /dev/null
 COPY --from=private-repo-access     /test/OK /dev/null
 COPY --from=with-no-libraries       /test/OK /dev/null
 COPY --from=disposed-env-variables  /test/OK /dev/null
+COPY --from=quick-exit-if-no-args   /test/OK /dev/null
 # Done!

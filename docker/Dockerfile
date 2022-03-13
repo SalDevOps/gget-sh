@@ -23,5 +23,3 @@ COPY --from=base /local/ /usr/local/
 WORKDIR /target
 
 ENTRYPOINT [ "entrypoint" ]
-
-CMD bash
