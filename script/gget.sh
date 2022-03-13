@@ -83,7 +83,7 @@ gget::parseArguments() {
                 base::setEnv GGET_GH_USERNAME "${2}" 'Git Auth Username'
                 shift 2
                 ;;
-            -o|--output-dir)
+            -o|--output)
                 base::setEnv GGET_OUTPUT_PATH "${2}" 'Output Directory '
                 shift 2
                 ;;
