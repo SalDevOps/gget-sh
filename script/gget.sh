@@ -164,7 +164,7 @@ gget::tryParseRepoURL() {
     if [[ -z ${_gget_url} ]]; then
         echo "Missing key argument: <GitHubUsername>/<Repository>"
         __showHelp
-        exit 400
+        exit 15
     fi
     # else...
     echo "Repo/URL: ${_gget_url}"
@@ -189,7 +189,7 @@ gget::tryParseRepoURL() {
     else
         echo "The value for URL/Shorthand seems to not match any valid criteria."
         __showHelp
-        exit 400
+        exit 16
     fi
 
     echo "Provider: ${_gget_hostname}"

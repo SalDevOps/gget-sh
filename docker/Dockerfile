@@ -6,9 +6,11 @@ ADD ${BaseLib}              /local/lib/base/
 ADD script/                 /local/lib/gget/
 ADD docker/entrypoint.sh    /local/bin/entrypoint
 
-RUN cd /usr/local/bin \
-    && ln -s ../lib/gget/gget.sh gget \
-    && ln -s ../lib/base/base.sh base
+RUN chmod 755 /local/lib/base/base.sh \
+    && cd /usr/local/bin \
+    && for lib in base gget; \
+    do { ln -s ../lib/${lib}/${lib}.sh ${lib}; } done
+
 
 FROM base AS final
 
