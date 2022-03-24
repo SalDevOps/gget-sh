@@ -1,0 +1,15 @@
+# Ignore everything at root level
+/*
+# Except for the main content directories
+!/docker
+!/script
+!/tests
+# .. the vs-code settings/tasks
+!/.vscode
+# .. and docs+ignore files
+!.dockerignore
+!.gitignore
+!README.md
+# Also all *.key files are explicitly ignored
+# (even within allowed dirs)
+*.key

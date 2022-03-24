@@ -1,0 +1,70 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "env": {
+            "BUILDKIT_PROGRESS": "plain",
+        }
+    },
+    "tasks": [
+        {
+            "label": "Build Docker Image",
+            "type": "shell",
+            "group": "build",
+            "command": "docker",
+            "args": [
+                "build",
+                "--no-cache",
+                "-f",
+                "docker/Dockerfile",
+                "-t",
+                "libre/gget:latest",
+                "."
+            ],
+            "presentation": {
+                "focus": true,
+                "clear": true
+            },
+            "promptOnClose": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Dockerized Tests",
+            "type": "shell",
+            "group": "test",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f",
+                "tests/docker-compose.yml",
+                "build",
+                "--no-cache"
+            ],
+            "presentation": {
+                "focus": true,
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "promptOnClose": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker Run Playground",
+            "type": "shell",
+            "group": "none",
+            "command": "docker",
+            "args": [
+                "run",
+                "--rm",
+                "-it",
+                "libre/gget",
+                "bash"
+            ],
+            "presentation": {
+                "focus": true,
+                "panel": "dedicated",
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+    ]
+}
